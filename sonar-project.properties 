@@ -1,5 +1,4 @@
 sonar.projectKey=my-devops-app
 sonar.projectName=my-devops-app
-sonar.sourceEncoding=UTF-8
 sonar.sources=.
-sonar.language=js
+sonar.host.url=${SONAR_HOST_URL}
