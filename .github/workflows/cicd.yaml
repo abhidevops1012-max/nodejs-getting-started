@@ -12,6 +12,12 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      sonarqube:
+         image: sonarqube:lts-community
+         ports:
+          - 9000:9000
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -29,10 +35,11 @@ jobs:
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v2
+        env:
+          SONAR_HOST_URL: http://sonarqube:9000
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-            host-url: ${{ secrets.SONAR_HOST_URL }}
-            token: ${{ secrets.SONAR_TOKEN }}
-
+          projectBaseDir: .
       - name: Build Docker Image
         run: |
           docker build -t $REGISTRY/${{ secrets.GHCR_USERNAME }}/$IMAGE_NAME:$VERSION .
