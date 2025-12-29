@@ -37,6 +37,8 @@ jobs:
       - name: Login to GHCR
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
 
+      - name: List Docker images (debug)
+        run: docker images
       - name: Push to GHCR
         run: |
           docker push $REGISTRY/${{ secrets.GHCR_USERNAME }}/$IMAGE_NAME:$VERSION
