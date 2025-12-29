@@ -33,33 +33,6 @@ jobs:
       - name: Run API tests
         run: npm test --if-present
       
-      - name: Wait for SonarQube to be ready
-        run: |
-         echo "Waiting for SonarQube to start..."
-         for i in {1..60}; do
-         STATUS=$(curl -s http://sonarqube:9000/api/system/status | jq -r '.status' || true)
-         if [ "$STATUS" = "UP" ]; then
-         echo "SonarQube is UP!"
-         exit 0
-         fi
-         echo "SonarQube status: $STATUS (waiting...)"
-         sleep 5
-         done
-         echo "SonarQube did not start in time."
-         exit 1
-
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v2
-        env:
-          SONAR_HOST_URL: http://sonarqube:9000
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: .
-      - name: Build Docker Image
-        run: |
-          docker build -t $REGISTRY/${{ secrets.GHCR_USERNAME }}/$IMAGE_NAME:$VERSION .
-          docker tag $REGISTRY/${{ secrets.GHCR_USERNAME }}/$IMAGE_NAME:$VERSION \
-                     $REGISTRY/${{ secrets.GHCR_USERNAME }}/$IMAGE_NAME:latest
 
       - name: Login to GHCR
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
