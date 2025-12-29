@@ -32,6 +32,21 @@ jobs:
 
       - name: Run API tests
         run: npm test --if-present
+      
+      - name: Wait for SonarQube to be ready
+        run: |
+         echo "Waiting for SonarQube to start..."
+         for i in {1..60}; do
+         STATUS=$(curl -s http://sonarqube:9000/api/system/status | jq -r '.status' || true)
+         if [ "$STATUS" = "UP" ]; then
+         echo "SonarQube is UP!"
+         exit 0
+         fi
+         echo "SonarQube status: $STATUS (waiting...)"
+         sleep 5
+         done
+         echo "SonarQube did not start in time."
+         exit 1
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v2
